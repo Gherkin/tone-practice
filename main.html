@@ -23,7 +23,7 @@ ghg
 
     const sampleRate = 10000;
     const bins = 8192;
-    const allowance_proc = 0.01;
+    const allowance_proc = 0.10;
     var analyser;
     var freq_diff = 0;
 
@@ -230,31 +230,24 @@ ghg
         var center = canvas.width / 2;
         var start = (center % spacing) + spacing;
         var num = (center - start) / spacing;
+        var notes;
         //console.log(played_notes, num);
         if(played_notes.length <= num) {
-            var color = 'black';
-            for (let i = 0; i < played_notes.length; i++) {
-                if (i == played_notes.length - 1) {
-                    color = freq_diff_to_color()
-                }
-                drawNote(played_notes[i][0],
-                        color,
-                        start + i * spacing,
-                        played_notes[i][1],
-                        vspacing)
-            }
-            return;
+            notes = played_notes;
+        } else {
+            notes = played_notes.slice(played_notes.length - num - 1)
         }
+
         var color = 'black';
-        for (let i = 0; i < num; i++) {
-            if (i == num  - 1) {
+        for (let i = 0; i < notes.length; i++) {
+            if (i == notes.length - 1) {
                 color = freq_diff_to_color()
             }
-            drawNote(played_notes[played_notes.length - num + i][0],
+            drawNote(notes[i][0],
                     color,
                     start + i * spacing,
-                    played_notes[played_notes.length - num + i][1],
-                    vspacing);
+                    notes[i][1],
+                    vspacing)
         }
     }
 
@@ -317,7 +310,7 @@ ghg
             }
         }
         console.log(freq_to_note(random));
-        played_notes.push(freq_to_note(random));
+        played_notes.push([freq_to_note(random)]);
 
         var interval = window.setInterval(function () {
             var data = new Uint8Array(analyser.frequencyBinCount);
